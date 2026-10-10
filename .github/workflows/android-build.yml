@@ -33,6 +33,11 @@ jobs:
           grep -q 'characterPhoto' app/src/main/assets/index.html
           echo "Ciri V3.2 ditemui."
 
+      - name: Fix Android file chooser import
+        run: |
+          sed -i 's/import android\.webkit\.FileChooserParams;/import android.webkit.WebChromeClient.FileChooserParams;/' app/src/main/java/tv/reltv/storyboard/MainActivity.java
+          grep -q 'import android.webkit.WebChromeClient.FileChooserParams;' app/src/main/java/tv/reltv/storyboard/MainActivity.java
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
