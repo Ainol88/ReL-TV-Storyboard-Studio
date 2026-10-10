@@ -1,0 +1,51 @@
+
+name: Build ReL TV Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract Android project ZIP
+        shell: bash
+        run: |
+          ZIP_FILE=$(find . -maxdepth 1 -type f -name '*.zip' | head -n 1)
+          if [ -z "$ZIP_FILE" ]; then
+            echo "ZIP proyek tidak ditemukan di folder utama."
+            exit 1
+          fi
+          mkdir -p /tmp/rel-project
+          unzip -o "$ZIP_FILE" -d /tmp/rel-project
+          cp -a /tmp/rel-project/. .
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.7'
+
+      - name: Build APK
+        run: gradle assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ReL-TV-Storyboard-Studio-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
