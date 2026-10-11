@@ -40,7 +40,7 @@ jobs:
           test -f V4/app/src/main/assets/index.html
           echo "Semua file utama V4 ditemukan."
 
-      - 
+      
       - name: Validate AndroidManifest XML
         run: |
           python3 - <<'PY'
@@ -59,6 +59,7 @@ jobs:
 
       - name: Build V4 debug APK
         run: gradle -p V4 assembleDebug --stacktrace
+
 
 
       - name: Upload V4 APK
