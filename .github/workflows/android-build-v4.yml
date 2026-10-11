@@ -40,8 +40,26 @@ jobs:
           test -f V4/app/src/main/assets/index.html
           echo "Semua file utama V4 ditemukan."
 
+      - 
+      - name: Validate AndroidManifest XML
+        run: |
+          python3 - <<'PY'
+          import xml.etree.ElementTree as ET
+          path = "V4/app/src/main/AndroidManifest.xml"
+          try:
+              ET.parse(path)
+              print("Manifest XML valid.")
+          except ET.ParseError as e:
+              print(f"Manifest XML error: {e}")
+              with open(path, "r", encoding="utf-8-sig") as f:
+                  for n, line in enumerate(f, 1):
+                      print(f"{n}: {line.rstrip()}")
+              raise
+          PY
+
       - name: Build V4 debug APK
-        run: gradle -p V4 assembleDebug
+        run: gradle -p V4 assembleDebug --stacktrace
+
 
       - name: Upload V4 APK
         uses: actions/upload-artifact@v4
