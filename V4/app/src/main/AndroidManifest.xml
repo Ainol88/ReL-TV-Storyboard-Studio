@@ -5,13 +5,12 @@
     <application
         android:allowBackup="true"
         android:label="ReL TV Storyboard Studio V4"
-        android:theme="@android:style/Theme.Material.Light.NoActionBar"
-        android:usesCleartextTraffic="true">
+        android:theme="@android:style/Theme.Material.Light.NoActionBar">
 
         <activity
             android:name=".MainActivity"
-            android:configChanges="orientation|screenSize|keyboardHidden"
-            android:exported="true">
+            android:exported="true"
+            android:configChanges="orientation|screenSize|keyboardHidden">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,6 +18,7 @@
             </intent-filter>
 
         </activity>
+
     </application>
 
 </manifest>
