@@ -203,13 +203,40 @@ function copyOutput(id){
  else fallbackCopy(t);
 }
 function fallbackCopy(t){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();alert('Teks disalin jika fungsi salin tersedia pada perangkat.')}
-function exportData(type){
- const text=type==='json'?JSON.stringify(db,null,2):'REL TV STORYBOARD STUDIO V4\n\n'+JSON.stringify(db,null,2);
- const blob=new Blob([text],{type:type==='json'?'application/json':'text/plain'});
- const url=URL.createObjectURL(blob);const a=document.createElement('a');
- a.href=url;a.download=(db.project.title||'ReL-TV-Proyek').replace(/[^a-z0-9_-]/gi,'_')+'.'+type;
- document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1500);
+function exportData(type) {
+    const text = type === 'json'
+        ? JSON.stringify(db, null, 2)
+        : 'REL TV STORYBOARD STUDIO V4\n\n'
+            + JSON.stringify(db, null, 2);
+
+    const filename =
+        (db.project.title || 'ReL-TV-Proyek')
+            .replace(/[^a-z0-9_-]/gi, '_')
+        + '.' + type;
+
+    const mimeType = type === 'json'
+        ? 'application/json'
+        : 'text/plain';
+
+    if (window.Android &&
+        typeof window.Android.saveFile === 'function') {
+        window.Android.saveFile(filename, mimeType, text);
+        return;
+    }
+
+    const blob = new Blob([text], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
 }
+
 function copyAll(){fallbackCopy(JSON.stringify(db,null,2))}
 function clearAll(){
  if(!confirm('Yakin ingin menghapus semua proyek, karakter dan adegan di aplikasi ini?'))return;
