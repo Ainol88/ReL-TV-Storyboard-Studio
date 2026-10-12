@@ -1,0 +1,249 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>ReL TV Storyboard Studio V4</title>
+<style>
+:root{--bg:#10131b;--panel:#1b202c;--line:#30394a;--accent:#8b7cff;--txt:#f5f6ff;--muted:#a9b1c5}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--txt);font:15px Arial,sans-serif}
+header{padding:20px 16px;background:#191b2a;border-bottom:1px solid var(--line)}
+header h1{font-size:21px;margin:0 0 7px}
+header p{color:var(--muted);font-size:12px;margin:0}
+nav{display:flex;gap:7px;padding:12px;overflow:auto;background:#151925;position:sticky;top:0;z-index:2}
+nav button{white-space:nowrap;width:auto;margin:0;padding:10px 13px}
+main{padding:14px;max-width:900px;margin:auto}
+.panel{background:var(--panel);border:1px solid var(--line);padding:15px;border-radius:14px;margin-bottom:14px}
+h2{font-size:18px;margin:0 0 14px}
+h3{font-size:15px}
+label{display:block;font-size:13px;color:var(--muted);margin:12px 0 6px}
+input,textarea,select{width:100%;padding:12px;border-radius:9px;border:1px solid var(--line);background:#111620;color:white;font:inherit}
+textarea{min-height:100px;resize:vertical}
+button{border:0;border-radius:9px;padding:12px 14px;background:var(--accent);color:white;font-weight:bold;cursor:pointer;margin:5px 4px 5px 0}
+button.secondary{background:#343b4d}
+button.danger{background:#9e3e52}
+button:active{opacity:.8}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.item{padding:12px;background:#111620;border:1px solid var(--line);border-radius:10px;margin:9px 0;overflow-wrap:anywhere}
+.item img{width:100%;max-height:220px;object-fit:contain;border-radius:8px;margin-top:8px}
+.small{color:var(--muted);font-size:12px;line-height:1.5}
+.output{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.55;background:#111620;padding:12px;border-radius:9px;min-height:60px}
+.hidden{display:none!important}
+.tag{color:#c8c0ff;font-size:12px}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:22px}
+@media(max-width:480px){.grid{grid-template-columns:1fr}header h1{font-size:19px}}
+</style>
+</head>
+<body>
+<header>
+<h1>🎬 ReL TV Storyboard Studio V4</h1>
+<p>Studio produksi film • Master Sheet • Storyboard • Prompt Foto & Video</p>
+</header>
+<nav>
+<button onclick="show('project')">Proyek</button>
+<button onclick="show('character')">Karakter</button>
+<button onclick="show('scene')">Adegan</button>
+<button onclick="show('board')">Storyboard</button>
+<button onclick="show('generator')">Generator</button>
+<button onclick="show('export')">Ekspor</button>
+</nav>
+<main>
+
+<section id="project" class="page">
+<div class="panel">
+<h2>📽️ Pengaturan Proyek</h2>
+<label>Judul film</label>
+<input id="title" placeholder="Contoh: 72 Jam di Tengah Laut">
+<label>Nama studio</label>
+<input id="studio" value="ReL TV">
+<div class="grid">
+<div><label>Rasio gambar</label><select id="ratio"><option>9:16</option><option>16:9</option><option>4:3</option><option>5:7</option><option>1:1</option></select></div>
+<div><label>Gaya visual</label><select id="style"><option>Sinematik realistis</option><option>Animasi 3D</option><option>Horor realistis</option><option>Aksi sinematik</option><option>Dokumenter</option><option>Fantasi Melayu</option></select></div>
+</div>
+<label>Sinopsis</label>
+<textarea id="synopsis" placeholder="Ceritakan inti film..."></textarea>
+<button onclick="saveProject()">Simpan Proyek</button>
+<p class="small" id="saveStatus">Data disimpan di perangkat ini.</p>
+</div>
+<div class="panel"><h2>Ringkasan Produksi</h2><div id="summary" class="output">Belum ada data produksi.</div></div>
+</section>
+
+<section id="character" class="page hidden">
+<div class="panel">
+<h2>👤 Character Studio</h2>
+<label>Nama karakter</label><input id="cname" placeholder="Nama tokoh">
+<label>Peran dalam film</label><input id="crole" placeholder="Tokoh utama, antagonis, dan sebagainya">
+<label>Deskripsi wajah dan fisik</label><textarea id="cface" placeholder="Ciri wajah, usia, rambut, bentuk tubuh..."></textarea>
+<label>Pakaian / Wardrobe Lock</label><textarea id="cward" placeholder="Pakaian yang harus konsisten..."></textarea>
+<label>Foto referensi wajah</label><input id="cphoto" type="file" accept="image/*">
+<p class="small">Pilih foto dari galeri HP. Foto disimpan secara lokal bersama data aplikasi.</p>
+<button onclick="addCharacter()">+ Simpan Karakter</button>
+<div id="characters"></div>
+</div>
+</section>
+
+<section id="scene" class="page hidden">
+<div class="panel">
+<h2>🎞️ Scene Editor</h2>
+<label>Judul adegan</label><input id="sname" placeholder="Contoh: Terombang-ambing">
+<div class="grid">
+<div><label>Nomor adegan</label><input id="snum" type="number" min="1" value="1"></div>
+<div><label>Durasi (detik)</label><input id="sduration" type="number" min="1" value="10"></div>
+</div>
+<label>Lokasi dan waktu</label><input id="slocation" placeholder="Laut lepas, menjelang senja">
+<label>Karakter dalam adegan</label><input id="scharacters" placeholder="Nama karakter, pisahkan dengan koma">
+<label>Aksi dan pergerakan</label><textarea id="saction" placeholder="Jelaskan gerakan tokoh secara berurutan..."></textarea>
+<label>Kamera dan pencahayaan</label><textarea id="scamera" placeholder="Close-up, wide shot, slow zoom out..."></textarea>
+<label>Dialog / audio / efek suara</label><textarea id="saudio" placeholder="Dialog, musik, ambience, atau tanpa dialog"></textarea>
+<button onclick="addScene()">+ Simpan Adegan</button>
+<div id="scenes"></div>
+</div>
+</section>
+
+<section id="board" class="page hidden">
+<div class="panel">
+<h2>🗂️ Storyboard Film</h2>
+<p class="small">Susunan adegan berdasarkan nomor. Isi adegan melalui Scene Editor.</p>
+<div id="storyboard"></div>
+</div>
+</section>
+
+<section id="generator" class="page hidden">
+<div class="panel">
+<h2>✨ Generator Prompt Foto & Video</h2>
+<label>Pilih adegan</label><select id="promptScene"></select>
+<label>Aturan tambahan</label><textarea id="extra" placeholder="Contoh: Jangan dirubah wajah sedikitpun. Latar belakang bergerak alami. Hindari tulisan yang tidak diperlukan."></textarea>
+<button onclick="generate()">Buat Prompt</button>
+<div class="item"><h3>📸 Prompt Foto</h3><div id="photoPrompt" class="output">Prompt foto akan muncul di sini.</div><button class="secondary" onclick="copyOutput('photoPrompt')">Salin Prompt Foto</button></div>
+<div class="item"><h3>🎥 Prompt Video</h3><div id="videoPrompt" class="output">Prompt video akan muncul di sini.</div><button class="secondary" onclick="copyOutput('videoPrompt')">Salin Prompt Video</button></div>
+<p class="small">Prompt dirangkai berdasarkan informasi proyek, adegan, karakter dan aturan tambahan yang kamu masukkan.</p>
+</div>
+</section>
+
+<section id="export" class="page hidden">
+<div class="panel">
+<h2>📦 Ekspor Proyek</h2>
+<p class="small">Ekspor data proyek dan seluruh adegan/karakter menjadi berkas yang bisa dibuka atau disimpan di HP.</p>
+<button onclick="exportData('json')">Ekspor JSON</button>
+<button onclick="exportData('txt')">Ekspor TXT</button>
+<button class="secondary" onclick="copyAll()">Salin Ringkasan</button>
+<button class="danger" onclick="clearAll()">Hapus Semua Data</button>
+<p class="small">Simpan salinan JSON secara berkala sebagai cadangan.</p>
+</div>
+</section>
+</main>
+<footer>ReL TV • Storyboard Studio V4</footer>
+
+<script>
+const KEY='reltv_storyboard_v4';
+let db={project:{title:'',studio:'ReL TV',ratio:'9:16',style:'Sinematik realistis',synopsis:''},characters:[],scenes:[]};
+function load(){
+ try{const d=JSON.parse(localStorage.getItem(KEY));if(d)db=d}catch(e){}
+ ['title','studio','ratio','style','synopsis'].forEach(k=>{document.getElementById(k).value=db.project[k]||''});
+ render();
+}
+function persist(){try{localStorage.setItem(KEY,JSON.stringify(db));document.getElementById('saveStatus').textContent='Tersimpan di perangkat ini.';renderSummary()}catch(e){alert('Penyimpanan penuh. Coba gunakan foto berukuran lebih kecil.');}}
+function saveProject(){
+ ['title','studio','ratio','style','synopsis'].forEach(k=>db.project[k]=document.getElementById(k).value);
+ persist();alert('Proyek berhasil disimpan.');
+}
+function show(id){
+ document.querySelectorAll('.page').forEach(p=>p.classList.add('hidden'));
+ document.getElementById(id).classList.remove('hidden');
+ render();
+}
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function addCharacter(){
+ const name=document.getElementById('cname').value.trim();
+ if(!name){alert('Masukkan nama karakter.');return}
+ const file=document.getElementById('cphoto').files[0];
+ const base={id:Date.now(),name,role:document.getElementById('crole').value,face:document.getElementById('cface').value,wardrobe:document.getElementById('cward').value,photo:''};
+ function finish(){db.characters.push(base);persist();['cname','crole','cface','cward','cphoto'].forEach(k=>document.getElementById(k).value='');render();alert('Karakter disimpan.')}
+ if(file){
+  if(file.size>1500000){alert('Foto terlalu besar. Pilih foto di bawah 1,5 MB agar penyimpanan tidak penuh.');return}
+  const r=new FileReader();r.onload=()=>{base.photo=r.result;finish()};r.onerror=()=>alert('Foto tidak dapat dibaca.');r.readAsDataURL(file);
+ }else finish();
+}
+function delChar(id){if(confirm('Hapus karakter ini?')){db.characters=db.characters.filter(c=>c.id!==id);persist();render()}}
+function addScene(){
+ const name=document.getElementById('sname').value.trim();
+ if(!name){alert('Masukkan judul adegan.');return}
+ db.scenes.push({id:Date.now(),num:+document.getElementById('snum').value||1,name,duration:+document.getElementById('sduration').value||10,location:document.getElementById('slocation').value,characters:document.getElementById('scharacters').value,action:document.getElementById('saction').value,camera:document.getElementById('scamera').value,audio:document.getElementById('saudio').value});
+ persist();['sname','slocation','scharacters','saction','scamera','saudio'].forEach(k=>document.getElementById(k).value='');document.getElementById('snum').value=db.scenes.length+1;render();alert('Adegan berhasil disimpan.');
+}
+function delScene(id){if(confirm('Hapus adegan ini?')){db.scenes=db.scenes.filter(s=>s.id!==id);persist();render()}}
+function render(){
+ document.getElementById('characters').innerHTML=db.characters.map(c=>`<div class="item"><b>${esc(c.name)}</b><p class="tag">${esc(c.role)}</p><p>${esc(c.face)}</p><p><b>Wardrobe Lock:</b> ${esc(c.wardrobe)}</p>${c.photo?`<img src="${c.photo}" alt="Foto karakter">`:''}<button class="danger" onclick="delChar(${c.id})">Hapus</button></div>`).join('')||'<p class="small">Belum ada karakter.</p>';
+ const scenes=[...db.scenes].sort((a,b)=>a.num-b.num);
+ document.getElementById('scenes').innerHTML=scenes.map(s=>`<div class="item"><b>Scene ${s.num}: ${esc(s.name)}</b><p class="small">${s.duration} detik • ${esc(s.location)}</p><p>${esc(s.action)}</p><button class="danger" onclick="delScene(${s.id})">Hapus Adegan</button></div>`).join('')||'<p class="small">Belum ada adegan.</p>';
+ document.getElementById('storyboard').innerHTML=scenes.map(s=>`<div class="item"><span class="tag">SCENE ${s.num} • ${s.duration} DETIK</span><h3>${esc(s.name)}</h3><p><b>Lokasi:</b> ${esc(s.location)}</p><p><b>Karakter:</b> ${esc(s.characters)}</p><p><b>Aksi:</b> ${esc(s.action)}</p><p><b>Kamera:</b> ${esc(s.camera)}</p><p><b>Audio:</b> ${esc(s.audio)}</p></div>`).join('')||'<p class="small">Tambahkan adegan terlebih dahulu.</p>';
+ document.getElementById('promptScene').innerHTML=scenes.map(s=>`<option value="${s.id}">Scene ${s.num}: ${esc(s.name)}</option>`).join('');
+ renderSummary();
+}
+function renderSummary(){
+ document.getElementById('summary').textContent='Judul: '+(db.project.title||'Belum diisi')+'\nStudio: '+(db.project.studio||'ReL TV')+'\nRasio: '+db.project.ratio+'\nGaya: '+db.project.style+'\nKarakter: '+db.characters.length+'\nAdegan: '+db.scenes.length+'\n\nSinopsis:\n'+(db.project.synopsis||'Belum diisi');
+}
+function generate(){
+ const id=+document.getElementById('promptScene').value;
+ const s=db.scenes.find(x=>x.id===id);
+ if(!s){alert('Buat dan simpan adegan terlebih dahulu.');return}
+ const names=(s.characters||'').split(',').map(x=>x.trim().toLowerCase()).filter(Boolean);
+ const chars=db.characters.filter(c=>names.includes(c.name.toLowerCase()));
+ const refs=chars.map(c=>`${c.name}: ${c.face}. Pakaian konsisten: ${c.wardrobe}.`).join('\n');
+ const common=`Film ${db.project.title||'ReL TV'}, gaya ${db.project.style}, rasio ${db.project.ratio}. Lokasi: ${s.location}. Karakter: ${s.characters}. ${refs}`;
+ const extra=document.getElementById('extra').value;
+ document.getElementById('photoPrompt').textContent=`Buat satu gambar sinematik untuk Scene ${s.num}: ${s.name}. ${common}\nAksi utama: ${s.action}. Kamera dan pencahayaan: ${s.camera}. Pertahankan identitas wajah karakter sesuai foto referensi. Wardrobe harus konsisten.\n${extra}`;
+ document.getElementById('videoPrompt').textContent=`Buat video berdurasi ${s.duration} detik untuk Scene ${s.num}: ${s.name}. ${common}\nGerakan dan aksi: ${s.action}. Pergerakan kamera: ${s.camera}. Audio, dialog dan efek suara: ${s.audio}. Gerakan tubuh serta latar belakang bergerak alami. Jaga kesinambungan wajah, pakaian, lokasi dan properti sepanjang adegan.\n${extra}`;
+}
+function copyOutput(id){
+ const t=document.getElementById(id).textContent;
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(()=>alert('Prompt disalin.')).catch(()=>fallbackCopy(t));
+ else fallbackCopy(t);
+}
+function fallbackCopy(t){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();alert('Teks disalin jika fungsi salin tersedia pada perangkat.')}
+function exportData(type) {
+    const text = type === 'json'
+        ? JSON.stringify(db, null, 2)
+        : 'REL TV STORYBOARD STUDIO V4\n\n'
+            + JSON.stringify(db, null, 2);
+
+    const filename =
+        (db.project.title || 'ReL-TV-Proyek')
+            .replace(/[^a-z0-9_-]/gi, '_')
+        + '.' + type;
+
+    const mimeType = type === 'json'
+        ? 'application/json'
+        : 'text/plain';
+
+    if (window.Android &&
+        typeof window.Android.saveFile === 'function') {
+        window.Android.saveFile(filename, mimeType, text);
+        return;
+    }
+
+    const blob = new Blob([text], { type: mimeType });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1500);
+}
+
+function copyAll(){fallbackCopy(JSON.stringify(db,null,2))}
+function clearAll(){
+ if(!confirm('Yakin ingin menghapus semua proyek, karakter dan adegan di aplikasi ini?'))return;
+ db={project:{title:'',studio:'ReL TV',ratio:'9:16',style:'Sinematik realistis',synopsis:''},characters:[],scenes:[]};
+ persist();load();alert('Data lokal dihapus.');
+}
+load();
+</script>
+</body>
+</html>
